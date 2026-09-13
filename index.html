@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>vie</title>
+<meta name="description" content="vie's corner of the internet" />
+
+<!--
+  HOW TO EDIT THIS PAGE
+  ----------------------
+  Scroll down to the <script> tag near the bottom. Everything you need
+  to personalize lives in the PROFILE object and the LINKS array —
+  edit the text in quotes, save, refresh. You never have to touch
+  the HTML or CSS unless you want to.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0a0a12;
+    --panel: #131320;
+    --text: #e9e4ea;
+    --muted: #8d8894;
+    --accent: #d98a97;
+    --accent-2: #6fae9c;
+    --line: rgba(233, 228, 234, 0.14);
+    --max-w: 560px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { color-scheme: dark; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    display: flex;
+    justify-content: center;
+    padding: 96px 24px 64px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* faint grain, evokes the static between the two spaces */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  main {
+    width: 100%;
+    max-width: var(--max-w);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin: 0 0 20px;
+    letter-spacing: 0.01em;
+  }
+
+  h1.name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2.4rem, 7vw, 3.2rem);
+    margin: 0 0 12px;
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    h1.name {
+      animation: glitchIn 1.15s steps(2, end) 1 forwards;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    h1.name { opacity: 1; }
+  }
+
+  @keyframes glitchIn {
+    0%   { opacity: 0; text-shadow: -5px 0 var(--accent), 5px 0 var(--accent-2); transform: translateX(-3px); }
+    12%  { opacity: 1; }
+    24%  { text-shadow: 4px 0 var(--accent-2), -4px 0 var(--accent); transform: translateX(2px); }
+    38%  { text-shadow: -3px 0 var(--accent), 3px 0 var(--accent-2); transform: translateX(-2px); }
+    52%  { text-shadow: 2px 0 var(--accent-2), -2px 0 var(--accent); transform: translateX(1px); }
+    68%  { text-shadow: -1px 0 var(--accent), 1px 0 var(--accent-2); transform: translateX(0); }
+    100% { opacity: 1; text-shadow: none; transform: translateX(0); }
+  }
+
+  .avatar-wrap {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    margin: 0 0 22px;
+  }
+
+  .avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--line);
+    display: block;
+  }
+
+  .avatar-status-dot {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 4px solid var(--bg);
+    background: var(--muted);
+  }
+
+  .avatar-status-dot[data-status="online"] { background: #23a55a; }
+  .avatar-status-dot[data-status="idle"]   { background: #f0b232; }
+  .avatar-status-dot[data-status="dnd"]    { background: #f23f43; }
+  .avatar-status-dot[data-status="offline"],
+  .avatar-status-dot[data-status="unknown"] { background: #80848e; }
+
+  .about-card {
+    width: 100%;
+    max-width: 320px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin: 0 0 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    text-align: left;
+  }
+
+  .about-row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-size: 0.88rem;
+    color: var(--text);
+    min-height: 1.2em;
+  }
+
+  .about-row svg {
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    color: var(--muted);
+  }
+
+  .about-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+    margin: 0 3px;
+  }
+
+  .about-dot[data-status="online"] { background: #23a55a; }
+  .about-dot[data-status="idle"]   { background: #f0b232; }
+  .about-dot[data-status="dnd"]    { background: #f23f43; }
+  .about-dot[data-status="offline"],
+  .about-dot[data-status="unknown"] { background: #80848e; }
+
+  .bio {
+    color: var(--text);
+    max-width: 46ch;
+    margin: 0 0 44px;
+  }
+
+  .divider {
+    width: 100%;
+    max-width: 220px;
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 0 0 28px;
+  }
+
+  h2.section-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.05rem;
+    color: var(--muted);
+    margin: 0 0 24px;
+  }
+
+  #links {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 48px;
+  }
+
+  .link-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 8px;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+
+  .link-row:hover,
+  .link-row:focus-visible {
+    background-color: var(--panel);
+  }
+
+  .link-row:focus-visible {
+    outline: 1px solid var(--accent-2);
+    outline-offset: 2px;
+  }
+
+  .link-marker {
+    color: var(--accent);
+    font-size: 0.7rem;
+    transform: translateY(-1px);
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .link-row:hover .link-marker,
+  .link-row:focus-visible .link-marker {
+    color: var(--accent-2);
+    transform: translateY(-1px) rotate(45deg);
+  }
+
+  .link-label {
+    font-weight: 700;
+    color: var(--text);
+    min-width: 76px;
+    text-align: left;
+  }
+
+  .link-handle {
+    color: var(--muted);
+    font-size: 0.92rem;
+    word-break: break-word;
+  }
+
+  .link-row:hover .link-handle,
+  .link-row:focus-visible .link-handle {
+    color: var(--text);
+  }
+
+  footer {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+    font-family: 'Fraunces', serif;
+  }
+
+  @media (max-width: 420px) {
+    .link-row {
+      flex-direction: column;
+      gap: 2px;
+      text-align: center;
+    }
+    .link-label { text-align: center; min-width: 0; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <p class="tagline" id="tagline"></p>
+  <h1 class="name" id="name"></h1>
+
+  <div class="avatar-wrap" id="avatar-wrap" hidden>
+    <img class="avatar" id="avatar-img" src="" alt="" />
+    <span class="avatar-status-dot" id="avatar-status-dot" data-status="unknown"></span>
+  </div>
+
+  <div class="about-card">
+    <div class="about-row" id="row-status" hidden>
+      <span class="about-dot" id="about-dot" data-status="unknown"></span>
+      <span id="about-status-text"></span>
+    </div>
+    <div class="about-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
+      <span id="about-location"></span>
+    </div>
+    <div class="about-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.4-3.6 4.4-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
+      <span id="about-pronouns"></span>
+    </div>
+    <div class="about-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+      <span id="about-time"></span>
+    </div>
+  </div>
+
+  <p class="bio" id="bio"></p>
+
+  <hr class="divider" />
+  <h2 class="section-title" id="section-title"></h2>
+  <div id="links"></div>
+
+  <footer id="footer"></footer>
+</main>
+
+<script>
+  /* ============================================================
+     EDIT ME — this is the only part of the file you should need
+     ============================================================ */
+
+  const PROFILE = {
+    tagline: "everything looks a little kinder through the static",
+    name: "hi, i'm vie",
+    pronouns: "they/them, non-binary",
+    location: "Oregon",
+    bio: "Currently trying to break into software development while keeping one foot in the weird and the sentimental. Most days you'll find me deep in some kind of story game, running from killers in dead by daylight, or building strange little corners of the internet like this one.",
+    sectionTitle: "elsewhere",
+    footer: "made by hand, held together with static",
+
+    // Paste a direct image URL (ends in .png/.jpg/.gif/.webp) to show your
+    // avatar with a live status ring, like a Discord profile card. Your
+    // Discord avatar URL works fine here. Leave as "" to skip the avatar
+    // entirely and just show the about card below.
+    avatarUrl: "https://cdn.discordapp.com/avatars/1234534767253389342/1ceddf9ad05544424ec2d8b44b0ea2c1.webp?size=1024",
+
+    // Used for the "local time" row below. Find your zone's name at
+    // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+    // (the "TZ identifier" column) — this defaults to Pacific time.
+    timezone: "America/Los_Angeles"
+  };
+
+  // Your Discord user ID (the numbers in your Discord link above).
+  // For this to work, this Discord account must join the Lanyard server:
+  // https://discord.gg/lanyard — that's it, no bot setup needed. Once you've
+  // joined, your live status will start showing up on this page within
+  // a few seconds. If you leave that server, the status will stop updating.
+  const DISCORD_USER_ID = "1234534767253389342";
+
+  const LINKS = [
+    { label: "Steam",   handle: "@songbi7d", url: "https://steamcommunity.com/id/songbi7d/" },
+    { label: "Discord", handle: "@songbi7d", url: "https://discord.com/users/1234534767253389342" },
+    { label: "GitHub",  handle: "@songbi7d",  url: "https://github.com/songbi7d" },
+    { label: "YouTube",  handle: "@songbi7d",  url: "https://www.youtube.com/@songbi7d" },
+    { label: "Instagram",  handle: "@songbi7d",  url: "https://www.instagram.com/songbi7d/" },
+  ];
+
+  /* ============================================================
+     Rendering — no need to touch anything below this line
+     ============================================================ */
+
+  document.getElementById('tagline').textContent = PROFILE.tagline;
+  document.getElementById('name').textContent = PROFILE.name;
+  document.getElementById('about-location').textContent = PROFILE.location;
+  document.getElementById('about-pronouns').textContent = PROFILE.pronouns;
+  document.getElementById('bio').textContent = PROFILE.bio;
+  document.getElementById('section-title').textContent = PROFILE.sectionTitle;
+  document.getElementById('footer').textContent = PROFILE.footer;
+
+  if (PROFILE.avatarUrl) {
+    document.getElementById('avatar-img').src = PROFILE.avatarUrl;
+    document.getElementById('avatar-img').alt = PROFILE.name;
+    document.getElementById('avatar-wrap').hidden = false;
+  }
+
+  const linksEl = document.getElementById('links');
+  LINKS.forEach(link => {
+    const a = document.createElement('a');
+    a.className = 'link-row';
+    a.href = link.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.innerHTML = `
+      <span class="link-marker">&#9670;</span>
+      <span class="link-label">${link.label}</span>
+      <span class="link-handle">${link.handle}</span>
+    `;
+    linksEl.appendChild(a);
+  });
+
+  /* ============================================================
+     Live Discord status, via the Lanyard API (api.lanyard.rest).
+     Your Discord account must have joined discord.gg/lanyard for
+     this to report anything — see the note above DISCORD_USER_ID.
+     ============================================================ */
+
+  const STATUS_LABELS = {
+    online: "online",
+    idle: "away",
+    dnd: "do not disturb",
+    offline: "offline"
+  };
+
+  async function updateDiscordStatus() {
+    const row = document.getElementById('row-status');
+    const dot = document.getElementById('about-dot');
+    const textEl = document.getElementById('about-status-text');
+    const avatarDot = document.getElementById('avatar-status-dot');
+    if (!DISCORD_USER_ID || DISCORD_USER_ID === "REPLACE_ME") return;
+
+    try {
+      const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`);
+      const json = await res.json();
+      if (!json.success) throw new Error('lanyard lookup failed');
+
+      const status = json.data.discord_status || "offline";
+      dot.dataset.status = status;
+      avatarDot.dataset.status = status;
+      textEl.textContent = STATUS_LABELS[status] || status;
+      row.hidden = false;
+    } catch (err) {
+      // Most likely this Discord account hasn't joined the Lanyard
+      // server yet — fail quietly rather than showing broken text.
+      row.hidden = true;
+      console.warn('Could not fetch Discord status:', err);
+    }
+  }
+
+  updateDiscordStatus();
+  setInterval(updateDiscordStatus, 60000);
+
+  /* ============================================================
+     Live local time, shown in the about card. Uses PROFILE.timezone
+     so it always reflects your time, not the visitor's.
+     ============================================================ */
+
+  function updateLocalTime() {
+    const timeEl = document.getElementById('about-time');
+    try {
+      const formatted = new Date().toLocaleTimeString('en-US', {
+        timeZone: PROFILE.timezone,
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+      timeEl.textContent = formatted;
+    } catch (err) {
+      // Invalid timezone string in PROFILE.timezone
+      timeEl.textContent = '—';
+      console.warn('Could not format local time:', err);
+    }
+  }
+
+  updateLocalTime();
+  setInterval(updateLocalTime, 15000);
+</script>
+
+</body>
+</html>
