@@ -541,10 +541,10 @@
      above PROFILE.musicUrl for why it isn't set to autoplay.
      ============================================================ */
 
-  if (PROFILE.musicUrl) {
+  if (Doomsday.mp3) {
     const audio = document.getElementById('bg-audio');
     const btn = document.getElementById('music-toggle');
-    audio.src = PROFILE.musicUrl;
+    audio.src = Doomsday.mp3;
     audio.volume = 0.5;
     btn.hidden = false;
 
