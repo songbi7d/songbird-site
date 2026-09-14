@@ -420,7 +420,7 @@
     // autoplaying with sound, so it's click-to-play by design — this
     // also means visitors aren't ambushed by sound the second they land.
     // Leave as "" to hide the button entirely.
-    musicUrl: ""
+    musicUrl: "Doomsday.mp3"
   };
 
   // Your Discord user ID (the numbers in your Discord link above).
@@ -541,10 +541,10 @@
      above PROFILE.musicUrl for why it isn't set to autoplay.
      ============================================================ */
 
-  if (Doomsday.mp3) {
+  if (Profile.musicUrl) {
     const audio = document.getElementById('bg-audio');
     const btn = document.getElementById('music-toggle');
-    audio.src = Doomsday.mp3;
+    audio.src = Profile.musicUrl;
     audio.volume = 0.5;
     btn.hidden = false;
 
