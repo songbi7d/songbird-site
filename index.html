@@ -286,9 +286,71 @@
     }
     .link-label { text-align: center; min-width: 0; }
   }
+
+  .music-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .music-toggle svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .music-toggle:hover,
+  .music-toggle:focus-visible {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .music-toggle[data-playing="true"] {
+    color: var(--accent-2);
+    border-color: var(--accent-2);
+  }
+
+  /* three little bars that bounce while playing */
+  .music-toggle .bars { display: none; align-items: flex-end; gap: 2px; height: 14px; }
+  .music-toggle[data-playing="true"] .note { display: none; }
+  .music-toggle[data-playing="true"] .bars { display: flex; }
+  .music-toggle .bars span {
+    width: 3px;
+    background: var(--accent-2);
+    animation: bar-bounce 0.9s ease-in-out infinite;
+  }
+  .music-toggle .bars span:nth-child(1) { height: 40%; animation-delay: 0s; }
+  .music-toggle .bars span:nth-child(2) { height: 100%; animation-delay: 0.2s; }
+  .music-toggle .bars span:nth-child(3) { height: 65%; animation-delay: 0.4s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .music-toggle .bars span { animation: none; height: 70% !important; }
+  }
+
+  @keyframes bar-bounce {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
 </style>
 </head>
 <body>
+
+<button class="music-toggle" id="music-toggle" type="button" aria-label="Play music" hidden>
+  <svg class="note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  <span class="bars"><span></span><span></span><span></span></span>
+</button>
+<audio id="bg-audio" loop preload="none"></audio>
 
 <main>
   <p class="tagline" id="tagline"></p>
@@ -350,7 +412,15 @@
     // Used for the "local time" row below. Find your zone's name at
     // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
     // (the "TZ identifier" column) — this defaults to Pacific time.
-    timezone: "America/Los_Angeles"
+    timezone: "America/Los_Angeles",
+
+    // Path to an audio file (mp3/ogg) sitting in the same repo as this
+    // page, e.g. "theme.mp3". A small play/pause button appears in the
+    // top-right corner when this is set. Browsers block audio from
+    // autoplaying with sound, so it's click-to-play by design — this
+    // also means visitors aren't ambushed by sound the second they land.
+    // Leave as "" to hide the button entirely.
+    musicUrl: ""
   };
 
   // Your Discord user ID (the numbers in your Discord link above).
@@ -465,6 +535,37 @@
 
   updateLocalTime();
   setInterval(updateLocalTime, 15000);
+
+  /* ============================================================
+     Background music toggle. Click-to-play only — see the note
+     above PROFILE.musicUrl for why it isn't set to autoplay.
+     ============================================================ */
+
+  if (PROFILE.musicUrl) {
+    const audio = document.getElementById('bg-audio');
+    const btn = document.getElementById('music-toggle');
+    audio.src = PROFILE.musicUrl;
+    audio.volume = 0.5;
+    btn.hidden = false;
+
+    btn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play().catch(err => console.warn('Playback failed:', err));
+      } else {
+        audio.pause();
+      }
+    });
+
+    audio.addEventListener('play', () => {
+      btn.dataset.playing = 'true';
+      btn.setAttribute('aria-label', 'Pause music');
+    });
+
+    audio.addEventListener('pause', () => {
+      btn.dataset.playing = 'false';
+      btn.setAttribute('aria-label', 'Play music');
+    });
+  }
 </script>
 
 </body>
