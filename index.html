@@ -287,12 +287,21 @@
     .link-label { text-align: center; min-width: 0; }
   }
 
-  .music-toggle {
+  .music-widget {
     position: fixed;
     top: 20px;
     right: 20px;
+    z-index: 20;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .music-toggle {
     width: 42px;
     height: 42px;
+    flex-shrink: 0;
     border-radius: 50%;
     background: var(--panel);
     border: 1px solid var(--line);
@@ -301,7 +310,6 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 20;
     transition: color 0.2s ease, border-color 0.2s ease;
   }
 
@@ -342,14 +350,46 @@
     0%, 100% { transform: scaleY(0.4); }
     50% { transform: scaleY(1); }
   }
+
+  .volume-wrap {
+    width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: width 0.2s ease, opacity 0.15s ease;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+  }
+
+  .music-widget:hover .volume-wrap,
+  .music-widget:focus-within .volume-wrap,
+  .music-widget[data-open="true"] .volume-wrap {
+    width: 100px;
+    opacity: 1;
+  }
+
+  .volume-slider {
+    width: 84px;
+    margin: 0 10px;
+    accent-color: var(--accent-2);
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
 
-<button class="music-toggle" id="music-toggle" type="button" aria-label="Play music" hidden>
-  <svg class="note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-  <span class="bars"><span></span><span></span><span></span></span>
-</button>
+<div class="music-widget" id="music-widget" hidden>
+  <button class="music-toggle" id="music-toggle" type="button" aria-label="Play music">
+    <svg class="note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    <span class="bars"><span></span><span></span><span></span></span>
+  </button>
+  <span class="volume-wrap">
+    <input class="volume-slider" id="volume-slider" type="range" min="0" max="100" value="50" aria-label="Volume" />
+  </span>
+</div>
 <audio id="bg-audio" loop preload="none"></audio>
 
 <main>
@@ -543,16 +583,41 @@
 
   if (PROFILE.musicUrl) {
     const audio = document.getElementById('bg-audio');
+    const widget = document.getElementById('music-widget');
     const btn = document.getElementById('music-toggle');
+    const slider = document.getElementById('volume-slider');
     audio.src = PROFILE.musicUrl;
-    audio.volume = 0.5;
-    btn.hidden = false;
+    audio.volume = slider.value / 100;
+    widget.hidden = false;
+
+    // Tap-to-reveal fallback for touch devices, where :hover never
+    // fires. Opens the slider on tap, closes it again after a few
+    // seconds of inactivity or as soon as you tap elsewhere.
+    let closeTimer;
+    function openVolume() {
+      widget.dataset.open = 'true';
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(() => { widget.dataset.open = 'false'; }, 3000);
+    }
 
     btn.addEventListener('click', () => {
       if (audio.paused) {
         audio.play().catch(err => console.warn('Playback failed:', err));
       } else {
         audio.pause();
+      }
+      openVolume();
+    });
+
+    slider.addEventListener('input', () => {
+      audio.volume = slider.value / 100;
+      openVolume();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!widget.contains(e.target)) {
+        widget.dataset.open = 'false';
+        clearTimeout(closeTimer);
       }
     });
 
